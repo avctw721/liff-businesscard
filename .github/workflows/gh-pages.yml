@@ -36,6 +36,7 @@ jobs:
           LIFFID_FULL: ${{ secrets.LIFFID_FULL }}
           LIFFID_SHARE_CSV: ${{ secrets.LIFFID_SHARE_CSV }}
           LIFFID_SHARE: ${{ secrets.LIFFID_SHARE }}
+          REURL_CC_API_KEY: ${{ secrets.REURL_CC_API_KEY }}
         run: |
           yarn
           yarn build
