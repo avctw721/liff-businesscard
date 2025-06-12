@@ -20,6 +20,7 @@ exports.build = async () => {
     baseurl: getBaseurl(),
     // GTAG_API_SECRET: getenv('GTAG_API_SECRET', GTAG_API_SECRET),
     // GTAG_ID: getenv('GTAG_ID', 'G-GZZ1VHK5ZD'),
+    reurlApi: getenv('REURL_CC_API_KEY'),
     NODE_ENV: getenv('NODE_ENV', 'production'),
     ..._.fromPairs(_.map([
       'LIFFID_FULL',
