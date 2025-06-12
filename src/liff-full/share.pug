@@ -28,20 +28,7 @@ block content
     .form-group.my-3
       .btn-group.btn-group-lg.w-100
         button.btn.btn-outline-secondary.btn-block.d-flex.justify-content-center.align-items-center(type="button", @click="btnCopy(linkLiffV2)") #[i.fa.mr-2.fa-clipboard] {{ $t('copy.btn') }}
-        button.btn.btn-outline-secondary.dropdown-toggle.dropdown-toggle-split(type="button", data-toggle="dropdown")
-        .dropdown-menu.dropdown-menu-right
-          button.dropdown-item(type="button", @click="btnCopy(linkLiffV1)") {{ $t('copy.btn') }} (LIFF v1)
-          button.dropdown-item(type="button", @click="btnCopy(linkLihi)") {{ $t('copy.btn') }} (lihi1.com)
       small.form-text.text-muted.mt-2 {{ $t('copy.help') }}
-    .dropdown.my-3
-      button.btn.btn-lg.btn-secondary.btn-block.dropdown-toggle(type="button", data-toggle="dropdown") {{ $t('dropdown.btn') }}
-      .dropdown-menu
-        a.dropdown-item(target="_blank", href="https://line.me/R/nv/QRCodeReader") #[i.fa.fa-fw.fa-qrcode] {{ $t('dropdown.qrcodeReader') }}
-        a.dropdown-item(target="_blank", href="https://line.me/R/nv/addFriends") #[i.fa.fa-fw.fa-users] {{ $t('dropdown.addFriends') }}
-        a.dropdown-item(target="_blank", href="https://line.me/R/nv/keep") #[i.fa.fa-fw.fa-bookmark] {{ $t('dropdown.keep') }}
-        a.dropdown-item(target="_blank", href=baseurl+'?openExternalBrowser=1') #[i.fa.fa-fw.fa-address-card] {{ $t('dropdown.create') }}
-        a.dropdown-item(target="_blank", href="https://lihi1.com/CVjIx/liffshare") #[i.fa.fa-fw.fa-comments] {{ $t('dropdown.discuss') }}
-        button.dropdown-item(type="button", @click="btnFriendMissing") #[i.fa.fa-fw.fa-question-circle] {{ $t('dropdown.friendMissing') }}
     .table-responsive(style="background-color: #849ebf")
       .chatbox.pt-3.w-100
         #flex2html(ref="flex2html")
@@ -196,11 +183,35 @@ block script
             await this.swalFire({ icon: 'error', title: this.$t('send.fail'), text: err.message })
           }
         },
+        async getShortUrl(url) {
+          const apiUrl = "https://api.reurl.cc/shorten"
+          try {
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: {
+                'Content-Type': 'application/json',
+                'reurl-api-key': '#{reurlApi}',
+              },
+              body: JSON.stringify({url: url})
+            });
+            if (!response.ok) {
+              await this.swalFire({ icon: 'error', title: this.$t('send.fail'), text: '網路錯誤，取得短網址失敗' })
+              return null
+            }
+            const result = await response.json();
+            return result.short_url
+          } catch (error) {
+            await this.swalFire({ icon: 'error', title: this.$t('send.fail'), text: '發生錯誤，取得短網址失敗：'+error })
+            return null
+          }
+        },
         async btnCopy (text, container = null) {
           // window.gtag.event('clipboard_copy', { content_type: 'text', text: _.truncate(text, { length: 30, omission: '' }) })
+          const shortUrl = await this.getShortUrl(text)
+          if (!shortUrl) return false;
           if (!container) container = document.body
           const dom = document.createElement('textarea')
-          dom.value = text
+          dom.value = shortUrl
           container.appendChild(dom)
           dom.select()
           dom.setSelectionRange(0, 1e6) // For mobile devices
@@ -222,7 +233,7 @@ block script
           })
         },
         async swalFire (args) {
-          if (_.isPlainObject(args)) args = { footer: this.$t('swalFooter'), ...args }
+          if (_.isPlainObject(args)) args = { ...args }
           return await Swal.fire(args)
         },
         getRenderedMsgs () {

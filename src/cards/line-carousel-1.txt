@@ -14,6 +14,7 @@ function renderBtn (ctx) {
     height: vcard.btnHeight || 'md',
     style: btn.style || 'primary',
     type: 'button',
+    scaling: true,
     action: {
       label: btn.text || '預設按鈕文字',
       type: 'uri',
@@ -21,34 +22,37 @@ function renderBtn (ctx) {
     },
   }
 }
-function renderBtnGroup (ctx) {
-  const { card, vcard } = ctx
+function renderBtnGroup(ctx) {
+  const { card, vcard } = ctx;
   const btns = _.map(card.btns, btn => renderBtn({ ...ctx, btn }));
   const cols = card.btnColsQty || 1;
 
   if (cols === 1) {
-    return {
+    return [{
       type: 'box',
       layout: 'vertical',
+      spacing: 'sm',
       contents: btns.map(btn => ({
         type: 'box',
         layout: 'horizontal',
         contents: [btn]
       }))
-    }
+    }]
   }
 
   const grouped = _.chunk(btns, cols);
-  return {
+  return grouped.map(row => ({
     type: 'box',
-    layout: 'vertical',
-    contents: grouped.map(row => ({
+    layout: 'horizontal',
+    spacing: 'sm',
+    contents: row.map(btn => ({
       type: 'box',
-      layout: 'horizontal',
-      contents: row
+      layout: 'vertical',
+      contents: [btn]
     }))
-  }
+  }));
 }
+
 
 function renderCard (ctx) {
   const { card, cardIdx, vcard } = ctx
@@ -99,9 +103,7 @@ function renderCard (ctx) {
       layout: 'vertical',
       spacing: 'sm',
       type: 'box',
-      contents: [
-        renderBtnGroup({ card, vcard })
-      ],
+      contents: renderBtnGroup({ card, vcard })
     },
   }
 }
