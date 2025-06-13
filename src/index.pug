@@ -16,19 +16,36 @@ block style
     :sass
       #businesscards .card-body
         border-top: 1px solid rgba(0,0,0,.125)
+      #businesscards .card
+        max-width: 480px
+        margin: 0 auto
+        font-size: 1.25rem
+      #businesscards
+        justify-content: center
+      .btn-line
+        background-color: #06C755 !important
+        border-color: #06C755 !important
+        color: #fff !important
+        font-weight: bold
+        &:hover, &:focus
+          background-color: #05b449 !important
+          border-color: #05b449 !important
+          color: #fff !important
 
 block content
   #app.container.my-4(v-cloak)
-    h1.my-3.text-center 免費樣版列表
-    #businesscards.row.row-cols-1.row-cols-md-2.row-cols-xl-3
-      .col.mb-4(v-for="card in businesscards")
+    h1.my-3.text-center LINE 圖卡製作
+    #businesscards.row.justify-content-center
+      .col-12.col-md-8.col-xl-6.mb-4
         .card.h-100
-          img.card-img-top(:src="card.preview", style="aspect-ratio: 1280/640")
-          .card-body.d-flex.flex-column
-            h5.card-title {{ card.name }}
-            h6.card-subtitle.mb-2.text-muted By {{ card.author }}
-            p.card-text {{ card.description }}
-            a.btn.btn-primary.mt-auto(:href='baseurl + card.form') #[i.fa.mr-2.fa-id-card-o] 點此建立名片
+          img.card-img-top(:src="businesscards[0].preview", style="aspect-ratio: 1280/640")
+          .card-body.d-flex.flex-column.align-items-center
+            h5.card-title.text-center 圖卡製作
+            h6.card-subtitle.mb-2.text-muted.text-center By {{ businesscards[0].author }}
+            p.card-text.text-center {{ businesscards[0].description }}
+            a.btn.btn-line.mt-auto(
+              :href='baseurl + businesscards[0].form'
+            ) 登入LINE開始製作
 
 block script
   script(crossorigin="anonymous", src="https://static.line-scdn.net/liff/edge/2/sdk.js")
